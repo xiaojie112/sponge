@@ -13,12 +13,35 @@ void get_URL(const string &host, const string &path) {
     // the computer whose name is in the "host" string,
     // then request the URL path given in the "path" string.
 
+    // host是域名，对应主机地址，path对应主机上的某个资源
+    //创建一个tcp连接
+    // printf("test1 pass\n");
+    TCPSocket tcpSocket = TCPSocket();
+    // printf("test2 pass\n");
+    Address addr = Address(host, "http");
+    // printf("test3 pass\n");
+
+    // connect建立连接
+    tcpSocket.connect(addr);
+
+    //发送http请求
+    tcpSocket.write("GET " + path +
+                    " HTTP/1.1\r\n"
+                    "Host: cs144.keithw.org\r\n"
+                    "Connection: close\r\n"
+                    "\r\n");
+
     // Then you'll need to print out everything the server sends back,
     // (not just one call to read() -- everything) until you reach
     // the "eof" (end of file).
+    string recv;
 
-    cerr << "Function called: get_URL(" << host << ", " << path << ").\n";
-    cerr << "Warning: get_URL() has not been implemented yet.\n";
+    while (!tcpSocket.eof()) {
+        tcpSocket.read(recv);
+        std::cout << recv;
+    }
+    // cerr << "Function called: get_URL(" << host << ", " << path << ").\n";
+    // cerr << "Warning: get_URL() has not been implemented yet.\n";
 }
 
 int main(int argc, char *argv[]) {
