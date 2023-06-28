@@ -13,6 +13,7 @@ class StreamReassembler {
   private:
     // Your code here -- add private members as necessary.
     //注意reassemblerBuffer的容量上限是capacity
+    bool setEOF;
     size_t unasm_bytes;
     std::unordered_map<size_t,std::string> reassemblerBuffer;
     size_t needIndex;

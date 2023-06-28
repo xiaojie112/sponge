@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/tests/fsm_stream_reassembler_single",
+            "program": "${workspaceFolder}/build/tests/fsm_stream_reassembler_dup",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

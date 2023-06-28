@@ -13,13 +13,23 @@ void DUMMY_CODE(Targs &&... /* unused */) {}
 
 using namespace std;
 
-StreamReassembler::StreamReassembler(const size_t capacity) : unasm_bytes(0), reassemblerBuffer(), needIndex(0),
+StreamReassembler::StreamReassembler(const size_t capacity) : setEOF(0), unasm_bytes(0),reassemblerBuffer(), needIndex(0),
 _output(capacity), _capacity(capacity){}
 
 //! \details This function accepts a substring (aka a segment) of bytes,
 //! possibly out-of-order, from the logical stream, and assembles any newly
 //! contiguous substrings and writes them into the output stream in order.
 void StreamReassembler::push_substring(const string &data, const size_t index, const bool eof) {
+    setEOF |= eof;
+    //旧数据直接抛弃掉
+    if(index + data.length() < needIndex + 1){
+        //eof的情况不要忘记考虑
+        if(eof && unasm_bytes == 0){
+            _output.end_input();
+        }
+        return;
+    }
+
     unordered_set<size_t> indexToDelete;
     //截取不重叠部分
     string temp = data;
@@ -27,43 +37,54 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     size_t maxIndex = needIndex + _capacity - _output.buffer_size() - 1;
     size_t curIndex = index;
     if(curIndex > maxIndex)return;
-    bool setEOF = eof;
+    
     if(curIndex + data.length() > 1 + maxIndex){
-        temp = temp.substr(0,maxIndex-curIndex);
+        temp = temp.substr(0,maxIndex-curIndex+1);
         setEOF = false;
     }
-    if(needIndex  == curIndex){
-        // 遍历哈希表
-        for (const auto& pair : reassemblerBuffer) {
-            size_t curEndIndex = curIndex + temp.length() - 1;
-            size_t startIndex = pair.first;
-            size_t endIndex = pair.first + pair.second.length() - 1;
-            if(curIndex >= startIndex && curEndIndex <= endIndex){
-                return;
-            }
-            if(curIndex <= startIndex && curEndIndex >= endIndex){
-                indexToDelete.insert(startIndex);
-            }
-            if(curIndex > startIndex && curIndex <= endIndex){
-                temp = temp.substr((endIndex-curIndex)+1);
-                curIndex = endIndex+1;
-            }
-            if(curEndIndex < endIndex && curEndIndex >= startIndex){
-                temp = temp.substr(0,temp.length()-(curEndIndex-startIndex));
-            }
 
+    //bug1 solve
+    if(curIndex < needIndex){
+        temp = temp.substr(needIndex - curIndex);
+        curIndex = needIndex;
+    }
+
+    // 遍历哈希表
+    for (const auto& pair : reassemblerBuffer) {
+        size_t curEndIndex = curIndex + temp.length() - 1;
+        size_t startIndex = pair.first;
+        // cout << "-----------------------" << reassemblerBuffer.at(startIndex) << endl;
+        size_t endIndex = pair.first + pair.second.length() - 1;
+        if(curIndex >= startIndex && curEndIndex <= endIndex){
+            return;
         }
-        
-        //删除元素
-        for(const auto& key : indexToDelete){
-            unasm_bytes -= reassemblerBuffer[key].length();
-            reassemblerBuffer.erase(key);
+        if(curIndex <= startIndex && curEndIndex >= endIndex){
+            indexToDelete.insert(startIndex);
+        }
+        if(curIndex > startIndex && curIndex <= endIndex){
+            temp = temp.substr((endIndex-curIndex)+1);
+            curIndex = endIndex+1;
+        }
+        if(curEndIndex < endIndex && curEndIndex >= startIndex){
+            temp = temp.substr(0,temp.length()-(curEndIndex-startIndex)-1);
         }
 
-        //成功截取不重叠的部分
+    }
+    
+    //删除元素
+    for(const auto& key : indexToDelete){
+        unasm_bytes -= reassemblerBuffer[key].length();
+        reassemblerBuffer.erase(key);
+    }
+
+    //成功截取不重叠的部分
+    if(temp.length() != 0){
         reassemblerBuffer[curIndex] = temp;
         unasm_bytes += temp.length();
+    }
+    
 
+    if(reassemblerBuffer.count(needIndex) > 0){
         //拼接
         string concat = "";
         size_t tempIndex = needIndex;
@@ -78,37 +99,6 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
         needIndex += concat.length();
         //读入字节流
         _output.write(concat);
-    }else{
-         // 遍历哈希表
-        for (const auto& pair : reassemblerBuffer) {
-            size_t curEndIndex = curIndex + temp.length() - 1;
-            size_t startIndex = pair.first;
-            size_t endIndex = pair.first + pair.second.length() - 1;
-            if(curIndex >= startIndex && curEndIndex <= endIndex){
-                return;
-            }
-            if(curIndex <= startIndex && curEndIndex >= endIndex){
-                indexToDelete.insert(startIndex);
-            }
-            if(curIndex > startIndex && curIndex <= endIndex){
-                temp = temp.substr((endIndex-curIndex)+1);
-                curIndex = endIndex+1;
-            }
-            if(curEndIndex < endIndex && curEndIndex >= startIndex){
-                temp = temp.substr(0,temp.length()-(curEndIndex-startIndex));
-            }
-
-        }
-        
-        //删除元素
-        for(const auto& key : indexToDelete){
-            unasm_bytes -= reassemblerBuffer[key].length();
-            reassemblerBuffer.erase(key);
-        }
-
-        //成功截取不重叠的部分
-        reassemblerBuffer[curIndex] = temp;
-        unasm_bytes += temp.length();
     }
 
     if(setEOF && unasm_bytes == 0){
