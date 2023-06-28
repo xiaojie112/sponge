@@ -31,25 +31,24 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     }
 
     unordered_set<size_t> indexToDelete;
-    //截取不重叠部分
+    
     string temp = data;
     //超出容量限制范围(bytestream + reassemblerBuffer <= capacity)之外的部分直接截取掉
     size_t maxIndex = needIndex + _capacity - _output.buffer_size() - 1;
     size_t curIndex = index;
     if(curIndex > maxIndex)return;
-    
     if(curIndex + data.length() > 1 + maxIndex){
         temp = temp.substr(0,maxIndex-curIndex+1);
         setEOF = false;
     }
 
-    //bug1 solve
+    //有部分与ByteStream已经写入的字节重叠
     if(curIndex < needIndex){
         temp = temp.substr(needIndex - curIndex);
         curIndex = needIndex;
     }
 
-    // 遍历哈希表
+    // 遍历哈希表截取不重叠部分
     for (const auto& pair : reassemblerBuffer) {
         size_t curEndIndex = curIndex + temp.length() - 1;
         size_t startIndex = pair.first;
@@ -77,7 +76,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
         reassemblerBuffer.erase(key);
     }
 
-    //成功截取不重叠的部分
+    //成功截取不重叠的部分并放入哈希表中
     if(temp.length() != 0){
         reassemblerBuffer[curIndex] = temp;
         unasm_bytes += temp.length();
