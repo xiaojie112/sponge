@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/tests/fsm_stream_reassembler_dup",
+            "program": "${workspaceFolder}/build/tests/wrapping_integers_roundtrip",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
