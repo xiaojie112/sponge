@@ -43,16 +43,16 @@ uint64_t unwrap(WrappingInt32 n, WrappingInt32 isn, uint64_t checkpoint) {
     // // uint64_t curDistance = 
     // if(checkpoint <= distance)return distance;
 
-    while(checkpoint > distance && checkpoint - distance > ((static_cast<uint64_t>(1)) << 32)){
-        distance += ((static_cast<uint64_t>(1)) << 32);
-    }
-
-    if(distance + ((static_cast<uint64_t>(1)) << 32) < checkpoint){
-        return distance;
-    }
-
-    if(distance + ((static_cast<uint64_t>(1)) << 32) - checkpoint < checkpoint - distance){
-        distance += ((static_cast<uint64_t>(1)) << 32);
+    uint64_t count = checkpoint / ((static_cast<uint64_t>(1) << 32));
+    distance += count * ((static_cast<uint64_t>(1) << 32));
+    if(distance <= checkpoint){
+        if(distance + ((static_cast<uint64_t>(1) << 32)) >= checkpoint){
+            distance = distance + ((static_cast<uint64_t>(1) << 32)) - checkpoint < checkpoint - distance ? distance + ((static_cast<uint64_t>(1) << 32)) : distance;
+        }
+    }else{
+        if(distance - ((static_cast<uint64_t>(1) << 32)) <= checkpoint){
+            distance = checkpoint - (distance - ((static_cast<uint64_t>(1) << 32))) < distance - checkpoint ? (distance - ((static_cast<uint64_t>(1) << 32))) : distance;
+        }
     }
 
 
