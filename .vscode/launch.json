@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/tests/wrapping_integers_roundtrip",
+            "program": "${workspaceFolder}/build/tests/recv_connect",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

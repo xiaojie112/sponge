@@ -19,6 +19,8 @@ using namespace std;
 ByteStream::ByteStream(const size_t capacity) : buffer(), cpty(capacity) {}
 
 size_t ByteStream::write(const string &data) {
+    // if(endInput == true)return 0;  这里考虑是否会有bug
+
     // DUMMY_CODE(data);
     //尽可能写多的字节并返回成功写入的字节数
     size_t wirteCount = 0;
@@ -28,6 +30,7 @@ size_t ByteStream::write(const string &data) {
         getBuffer().push_front(c);
         wirteCount++;
     }
+    // if(data.length() == 0)wirteCount = 1;//
     writeNum += wirteCount;
     return wirteCount;
 }

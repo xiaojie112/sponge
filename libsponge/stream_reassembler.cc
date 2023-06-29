@@ -21,10 +21,11 @@ _output(capacity), _capacity(capacity){}
 //! contiguous substrings and writes them into the output stream in order.
 void StreamReassembler::push_substring(const string &data, const size_t index, const bool eof) {
     setEOF |= eof;
-    //旧数据直接抛弃掉
-    if(index + data.length() < needIndex + 1){
+
+    //data.length() == 0情况也在如下考虑，不会写入Bytestream中
+    if(index + data.length() < needIndex + 1){//主要目的是将旧的数据直接抛弃掉
         //eof的情况不要忘记考虑
-        if(eof && unasm_bytes == 0){
+        if(setEOF && unasm_bytes == 0){
             _output.end_input();
         }
         return;
