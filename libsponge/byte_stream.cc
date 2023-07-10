@@ -30,7 +30,7 @@ size_t ByteStream::write(const string &data) {
         getBuffer().push_front(c);
         wirteCount++;
     }
-    // if(data.length() == 0)wirteCount = 1;//
+    
     writeNum += wirteCount;
     return wirteCount;
 }
@@ -38,7 +38,8 @@ size_t ByteStream::write(const string &data) {
 //! \param[in] len bytes will be copied from the output side of the buffer
 string ByteStream::peek_output(const size_t len) const {
     // DUMMY_CODE(len);
-    //这里如何考虑出错的情况：想要查看的字节数超出了buffer的容量
+    //这里考虑了想要查看的字节数超出了buffer的容量
+    // size_t length = len > buffer.size() ? buffer.size() : len;
     size_t length = len;
     list<char> lisToString;
     while (length != 0) {
@@ -53,12 +54,13 @@ string ByteStream::peek_output(const size_t len) const {
 void ByteStream::pop_output(const size_t len) {
     // DUMMY_CODE(len);
     //如何考虑出错的情况
+    // size_t length = len > buffer.size() ? buffer.size() : len;
     size_t length = len;
     while (length != 0) {
         buffer.pop_back();
         length--;
     }
-    readNum += len;
+    readNum += length;
 }
 
 void ByteStream::end_input() { endInput = true; }

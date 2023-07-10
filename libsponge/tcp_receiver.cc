@@ -43,7 +43,7 @@ void TCPReceiver::segment_received(const TCPSegment &seg) {
     
 }
 
-//报文段发送过来的时候，有一部分接收，一部分没有接收，如何返回ackno?
+
 optional<WrappingInt32> TCPReceiver::ackno() const { 
     if(!setISN){
         return {}; 
@@ -59,6 +59,7 @@ optional<WrappingInt32> TCPReceiver::ackno() const {
         
     }
 
+//报文段发送过来的时候，有一部分接收，一部分没有接收，如何返回ackno?
     //fin报文携带了数据的情况
     return stream_out().input_ended() ? wrap(stream_out().bytes_written()+1, isn) + 1 : wrap(stream_out().bytes_written()+1, isn); 
 }

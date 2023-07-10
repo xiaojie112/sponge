@@ -8,6 +8,8 @@
 
 #include <functional>
 #include <queue>
+#include <list>
+
 
 //! \brief The "sender" part of a TCP implementation.
 
@@ -23,6 +25,7 @@ class TCPSender {
     //! outbound queue of segments that the TCPSender wants sent
     std::queue<TCPSegment> _segments_out{};
 
+    
     //! retransmission timer for the connection
     unsigned int _initial_retransmission_timeout;
 
@@ -32,6 +35,18 @@ class TCPSender {
     //! the (absolute) sequence number for the next byte to be sent
     uint64_t _next_seqno{0};
 
+    //连续重传次数
+    unsigned int con_retran_times;
+
+    //structure which record outstanding segments
+    std::list<TCPSegment> outstanding_list{};
+
+    //跟踪接收方窗口的大小,同时标识了sender还可以发送数据的量
+    uint16_t win_size;
+
+    //bytes_flight
+    size_t bytes_flight;
+    
   public:
     //! Initialize a TCPSender
     TCPSender(const size_t capacity = TCPConfig::DEFAULT_CAPACITY,

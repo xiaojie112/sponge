@@ -13,6 +13,10 @@ class TCPSegment {
     Buffer _payload{};
 
   public:
+    TCPSegment() = default;
+    // 构造函数，接受 TCPHeader 和 Buffer 对象
+    TCPSegment(const TCPHeader& header, const Buffer& payload) : _header(header), _payload(payload) {}
+    
     //! \brief Parse the segment from a string
     ParseResult parse(const Buffer buffer, const uint32_t datagram_layer_checksum = 0);
 
