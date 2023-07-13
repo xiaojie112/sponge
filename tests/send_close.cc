@@ -62,7 +62,7 @@ int main() {
             test.execute(Close{});
             test.execute(ExpectState{TCPSenderStateSummary::FIN_SENT});
             test.execute(ExpectSegment{}.with_fin(true).with_seqno(isn + 1));
-            test.execute(AckReceived{WrappingInt32{isn + 1}});
+            test.execute(AckReceived{WrappingInt32{isn + 1}});   
             test.execute(ExpectState{TCPSenderStateSummary::FIN_SENT});
             test.execute(ExpectBytesInFlight{1});
             test.execute(ExpectNoSegment{});

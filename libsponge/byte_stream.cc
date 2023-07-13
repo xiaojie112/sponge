@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>
-
+#include <iostream>
 // Dummy implementation of a flow-controlled in-memory byte stream.
 
 // For Lab 0, please replace with a real implementation that passes the
@@ -19,12 +19,14 @@ using namespace std;
 ByteStream::ByteStream(const size_t capacity) : buffer(), cpty(capacity) {}
 
 size_t ByteStream::write(const string &data) {
-    // if(endInput == true)return 0;  这里考虑是否会有bug
+    //TODO: 考虑可能有bug
+    // if(endInput == true)return 0;  这里考虑是否会有bug, 有可能已经endInput但是仍然有segment携带数据过来
 
     // DUMMY_CODE(data);
     //尽可能写多的字节并返回成功写入的字节数
     size_t wirteCount = 0;
     for (char c : data) {
+        // cout << "check2:" << buffer.size() << endl;
         if (buffer.size() == getCapacity())
             break;
         getBuffer().push_front(c);
@@ -39,12 +41,16 @@ size_t ByteStream::write(const string &data) {
 string ByteStream::peek_output(const size_t len) const {
     // DUMMY_CODE(len);
     //这里考虑了想要查看的字节数超出了buffer的容量
-    // size_t length = len > buffer.size() ? buffer.size() : len;
-    size_t length = len;
+    size_t length = len > buffer.size() ? buffer.size() : len;
+    // cout <<"checkout2:" << buffer.size() << endl;
+    // cout << "checkout1:" << (len > buffer.size() ? buffer.size() : len) << endl;
+    // size_t length = len;
     list<char> lisToString;
-    while (length != 0) {
-        lisToString.push_back(buffer.at(length - 1));
-        length--;
+    size_t temp = 0;
+    while (length != temp) {
+        // cout << "checkout3: " << buffer.at(length-1) << endl;
+        lisToString.push_back(buffer.at(buffer.size() - temp-1));
+        temp++;
     }
     string str(lisToString.begin(), lisToString.end());
     return str;
@@ -54,13 +60,14 @@ string ByteStream::peek_output(const size_t len) const {
 void ByteStream::pop_output(const size_t len) {
     // DUMMY_CODE(len);
     //如何考虑出错的情况
-    // size_t length = len > buffer.size() ? buffer.size() : len;
-    size_t length = len;
+    size_t length = len > buffer.size() ? buffer.size() : len;
+    readNum += length;
+    // size_t length = len;
     while (length != 0) {
         buffer.pop_back();
         length--;
     }
-    readNum += length;
+    
 }
 
 void ByteStream::end_input() { endInput = true; }

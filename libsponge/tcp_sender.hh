@@ -47,6 +47,20 @@ class TCPSender {
     //bytes_flight
     size_t bytes_flight;
     
+    //超时重传计时器启动的时间
+    size_t timer_start;
+
+    size_t timer_on;
+
+    //系统经过的总时间
+    size_t time_pass;
+
+    //此时的超时重传时间
+    unsigned int retransmission_timeout;
+
+    //标记是否已经发送过fin报文
+    bool fin_sent;
+    
   public:
     //! Initialize a TCPSender
     TCPSender(const size_t capacity = TCPConfig::DEFAULT_CAPACITY,
