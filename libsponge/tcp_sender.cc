@@ -89,9 +89,9 @@ void TCPSender::fill_window() {
             TCPHeader tcpheader;
             tcpheader.seqno = next_seqno(); // seqo
             tcpheader.syn =  next_seqno_absolute() == 0;
-            cout << "check1: " << _stream.buffer_empty() << endl;
+            // cout << "check1: " << _stream.buffer_empty() << endl;
             string readStr = _stream.read(real_win_size);
-            cout << "check2: " << readStr << endl;
+            // cout << "check2: " << readStr << endl;
             //如何判断这是否是一个fin报文
             // tcpheader.fin = _stream.buffer_empty();
             //TODO: stream的eof的标志是如何设置的
