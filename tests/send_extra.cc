@@ -33,13 +33,18 @@ int main() {
             cout << "test4" << endl;
             test.execute(WriteBytes("abc"));
             test.execute(ExpectSegment{}.with_payload_size(3).with_data("abc").with_seqno(isn + 1));
+            cout << "test5" << endl;
             test.execute(Tick{rto - 5});
             test.execute(ExpectNoSegment{});
+            cout << "test6" << endl;
             test.execute(WriteBytes("def"));
             test.execute(ExpectSegment{}.with_payload_size(3).with_data("def"));
             test.execute(Tick{6});
+            cout << "test7" << endl;
             test.execute(ExpectSegment{}.with_payload_size(3).with_data("abc").with_seqno(isn + 1));
+            cout << "test8" << endl;
             test.execute(ExpectNoSegment{});
+            cout << "test9" << endl;
         }
 
         {

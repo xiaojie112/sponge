@@ -77,7 +77,10 @@ void TCPSender::fill_window() {
 
             _next_seqno += segment.length_in_sequence_space();
 
-            if(timer_on)timer_start = time_pass;
+            if(!timer_on){
+                timer_start = time_pass;
+                timer_on = true;
+            }
         }else{
             //TODO: 如何处理对fin报文的ack， fin报文已经ack了， 那么即使有空间发送数据， 也不能再发送segment
             if(_stream.eof() && _stream.bytes_written()+2 == next_seqno_absolute() && bytes_in_flight() == 0)return;
