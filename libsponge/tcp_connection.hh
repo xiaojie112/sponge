@@ -21,6 +21,13 @@ class TCPConnection {
     //! in case the remote TCPConnection doesn't know we've received its whole stream?
     bool _linger_after_streams_finish{true};
 
+  //上一个segment收到的时刻
+    size_t segment_last_received_time{0};
+
+    //系统经过的总时间
+    size_t time_pass{0};
+
+    bool is_active{true};
   public:
     //! \name "Input" interface for the writer
     //!@{
@@ -94,6 +101,8 @@ class TCPConnection {
     TCPConnection(const TCPConnection &other) = delete;
     TCPConnection &operator=(const TCPConnection &other) = delete;
     //!@}
+
+    void pack_with_winsize_ack_send();
 };
 
 #endif  // SPONGE_LIBSPONGE_TCP_FACTORED_HH

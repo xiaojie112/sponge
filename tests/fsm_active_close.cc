@@ -19,15 +19,21 @@ int main() {
 
         // test #1: start in TIME_WAIT, timeout
         {
+            // cout << "test1" << endl;
             TCPTestHarness test_1 = TCPTestHarness::in_time_wait(cfg);
+            // cout << "test2" << endl;
 
             test_1.execute(Tick(10 * cfg.rt_timeout - 1));
+            // cout << "test3" << endl;
 
             test_1.execute(ExpectState{State::TIME_WAIT});
+            // cout << "test1" << endl;
 
             test_1.execute(Tick(1));
+            // cout << "test1" << endl;
 
             test_1.execute(ExpectNotInState{State::TIME_WAIT});
+            // cout << "test1" << endl;
 
             test_1.execute(Tick(10 * cfg.rt_timeout));
 

@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/tests/send_extra",
+            "program": "${workspaceFolder}/build/tests/fsm_winsize",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

@@ -92,7 +92,7 @@ void TCPSender::fill_window() {
             TCPHeader tcpheader;
             tcpheader.seqno = next_seqno(); // seqo
             tcpheader.syn =  next_seqno_absolute() == 0;
-            // cout << "check1: " << _stream.buffer_empty() << endl;
+            // cout << "check1: next_seqno_absolute()  " << next_seqno_absolute() << endl;
             string readStr = _stream.read(real_win_size);
             // cout << "check2: " << readStr << endl;
             //如何判断这是否是一个fin报文
@@ -162,7 +162,8 @@ void TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_si
     if(outstanding_list.empty())timer_on = false;//关闭超时重传计时器
 
     //如果腾出了新的空间，继续fill the window
-    //TODO: 这一行代码去掉了也无妨 fill_window();
+    //TODO: 这一行代码去掉了也无妨 fill_window();  ????不能去掉
+    fill_window();
 
     // cout << "check1:" << _segments_out.empty() << endl;
 }
@@ -185,10 +186,19 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
         
     }
 
-    //TODO: end up sending a segment
+    //TODO: end up sending a segment    这个bug在lab4找了很久
     // fill_window();
 }
 
 unsigned int TCPSender::consecutive_retransmissions() const { return con_retran_times; }
 
-void TCPSender::send_empty_segment() {}
+void TCPSender::send_empty_segment() {
+    //ackno和winsize由receiver填充
+    TCPHeader tcpheader;
+    //ACK=1不在此处设置
+    tcpheader.seqno = next_seqno(); // seqo
+    string readStr = "";
+    Buffer payload(std::move(readStr));
+    TCPSegment segment(tcpheader, payload);
+    _segments_out.push(segment);
+}
