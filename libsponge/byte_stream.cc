@@ -24,49 +24,61 @@ size_t ByteStream::write(const string &data) {
 
     // DUMMY_CODE(data);
     //尽可能写多的字节并返回成功写入的字节数
-    size_t wirteCount = 0;
-    for (char c : data) {
-        // cout << "check2:" << buffer.size() << endl;
-        if (buffer.size() == getCapacity())
-            break;
-        getBuffer().push_front(c);
-        wirteCount++;
-    }
+    // size_t wirteCount = 0;
+    // for (char c : data) {
+    //     // cout << "check2:" << buffer.size() << endl;
+    //     if (buffer.size() == getCapacity())
+    //         break;
+    //     getBuffer().push_front(c);
+    //     wirteCount++;
+    // }
     
-    writeNum += wirteCount;
-    return wirteCount;
+    // writeNum += wirteCount;
+    // return wirteCount;
+
+    if (endInput)
+        return 0;
+    size_t write_size = min(data.size(), cpty - buffer.size());
+    writeNum += write_size;
+    for (size_t i = 0; i < write_size; i++)
+        buffer.push_back(data[i]);
+    return write_size;
 }
 
 //! \param[in] len bytes will be copied from the output side of the buffer
 string ByteStream::peek_output(const size_t len) const {
-    // DUMMY_CODE(len);
-    //这里考虑了想要查看的字节数超出了buffer的容量
-    size_t length = len > buffer.size() ? buffer.size() : len;
-    // cout <<"checkout2:" << buffer.size() << endl;
-    // cout << "checkout1:" << (len > buffer.size() ? buffer.size() : len) << endl;
-    // size_t length = len;
-    list<char> lisToString;
-    size_t temp = 0;
-    while (length != temp) {
-        // cout << "checkout3: " << buffer.at(length-1) << endl;
-        lisToString.push_back(buffer.at(buffer.size() - temp-1));
-        temp++;
-    }
-    string str(lisToString.begin(), lisToString.end());
-    return str;
+
+    // size_t length = len > buffer.size() ? buffer.size() : len;
+    // list<char> lisToString;
+    // size_t temp = 0;
+    // while (length != temp) {
+    //     // cout << "checkout3: " << buffer.at(length-1) << endl;
+    //     lisToString.push_back(buffer.at(buffer.size() - temp-1));
+    //     temp++;
+    // }
+    // string str(lisToString.begin(), lisToString.end());
+    // return str;
+
+    size_t pop_size = min(len, buffer.size());
+    return string(buffer.begin(), buffer.begin() + pop_size);
 }
 
 //! \param[in] len bytes will be removed from the output side of the buffer
 void ByteStream::pop_output(const size_t len) {
-    // DUMMY_CODE(len);
+    
     //如何考虑出错的情况
-    size_t length = len > buffer.size() ? buffer.size() : len;
-    readNum += length;
-    // size_t length = len;
-    while (length != 0) {
-        buffer.pop_back();
-        length--;
-    }
+    // size_t length = len > buffer.size() ? buffer.size() : len;
+    // readNum += length;
+    // // size_t length = len;
+    // while (length != 0) {
+    //     buffer.pop_back();
+    //     length--;
+    // }
+
+    size_t pop_size = min(len, buffer.size());
+    readNum += pop_size;
+    for (size_t i = 0; i < pop_size; i++)
+        buffer.pop_front();
     
 }
 

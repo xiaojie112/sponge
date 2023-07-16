@@ -73,16 +73,7 @@ void TCPConnection::segment_received(const TCPSegment &seg) {
 
 bool TCPConnection::active() const { 
     if((_sender.stream_in().error() || _receiver.stream_out().error()))return false;
-    // if(!_receiver.stream_out().eof() || !_sender.stream_in().eof()){
-    //     return true;
-    // }
-    // if(_sender.get_fin_sent() && _sender.get_outstanding_list().empty()){
-    //     if(_linger_after_streams_finish){
-    //         return time_since_last_segment_received() < _cfg.rt_timeout * 10;
-    //     }else{
-    //         return false;
-    //     }
-    // }
+   
     return is_active;
 }
 

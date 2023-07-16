@@ -1,4 +1,4 @@
-#include "socket.hh"
+#include "tcp_sponge_socket.hh"
 #include "util.hh"
 
 #include <cstdlib>
@@ -16,7 +16,7 @@ void get_URL(const string &host, const string &path) {
     // host是域名，对应主机地址，path对应主机上的某个资源
     //创建一个tcp连接
     // printf("test1 pass\n");
-    TCPSocket tcpSocket = TCPSocket();
+    CS144TCPSocket tcpSocket = CS144TCPSocket();
     // printf("test2 pass\n");
     Address addr = Address(host, "http");
     // printf("test3 pass\n");
@@ -42,6 +42,7 @@ void get_URL(const string &host, const string &path) {
     }
     // cerr << "Function called: get_URL(" << host << ", " << path << ").\n";
     // cerr << "Warning: get_URL() has not been implemented yet.\n";
+    tcpSocket.wait_until_closed();
 }
 
 int main(int argc, char *argv[]) {
